@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IB Physics IA Writing Tool</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --border: #e2e8f0;
+  --accent: #1d4ed8;
+  --accent-hover: #1e40af;
+  --accent-light: #eff6ff;
+  --green: #22c55e;
+  --green-light: #f0fdf4;
+  --amber: #d97706;
+  --amber-light: #fffbeb;
+  --red: #dc2626;
+  --red-light: #fef2f2;
+  --navy: #1e3a5f;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,0.1);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ─── HEADER ─── */
+#app-header {
+  background: var(--navy);
+  color: #fff;
+  padding: 20px 24px 16px;
+  box-shadow: var(--shadow-lg);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+#app-header h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+}
+
+.progress-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--green);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+.progress-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  min-width: 40px;
+  text-align: right;
+  color: rgba(255,255,255,0.8);
+}
+
+.metadata {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 12px;
+}
+.meta-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.meta-field label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.6);
+}
+.meta-field input {
+  padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 0.875rem;
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s;
+}
+.meta-field input::placeholder { color: rgba(255,255,255,0.4); }
+.meta-field input:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.15);
+}
+.meta-field input[type="date"] {
+  color-scheme: dark;
+}
+
+/* ─── MAIN ─── */
+main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+/* ─── CRITERION SECTION ─── */
+.criterion {
+  margin-bottom: 40px;
+}
+.criterion-header {
+  background: var(--navy);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.criterion-header h2 {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.marks-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(255,255,255,0.15);
+  padding: 3px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.02em;
+}
+
+/* ─── FIELD GROUP ─── */
+.field-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.field-header h3 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+.field-status {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+  transition: background 0.2s, border-color 0.2s;
+}
+.field-status.completed {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.section-progress {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.65);
+  margin-left: 10px;
+  letter-spacing: 0.02em;
+}
+.section-progress.complete {
+  color: #86efac;
+}
+
+/* ─── PROMPT BOX ─── */
+.prompt-box {
+  background: var(--accent-light);
+  border-left: 3px solid var(--accent);
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  border-radius: 0 6px 6px 0;
+}
+.prompt-box p {
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.prompt-box p:last-child { margin-bottom: 0; }
+
+/* ─── HINTS / WARNINGS ─── */
+.hint-box, .warning-box {
+  margin-bottom: 10px;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+}
+.hint-box {
+  background: var(--green-light);
+  border: 1px solid #bbf7d0;
+}
+.warning-box {
+  background: var(--amber-light);
+  border: 1px solid #fde68a;
+}
+.hint-box summary, .warning-box summary {
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.78125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  user-select: none;
+  border-radius: 6px;
+}
+.hint-box summary { color: #15803d; }
+.warning-box summary { color: #92400e; }
+.hint-box[open] summary, .warning-box[open] summary {
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.hint-box p, .warning-box p {
+  padding: 6px 14px 8px;
+  line-height: 1.6;
+}
+.hint-box p:first-of-type { padding-top: 10px; }
+
+/* ─── TEXTAREAS ─── */
+.field-group textarea {
+  width: 100%;
+  min-height: 160px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--text);
+  background: #fcfcfc;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field-group textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(29,78,216,0.1);
+  background: #fff;
+}
+.field-group textarea::placeholder {
+  color: var(--text-light);
+}
+
+/* ─── SHORT TEXTAREA OVERRIDES ─── */
+.field-group[data-field="safety"] textarea {
+  min-height: 100px;
+}
+
+/* ─── IMAGE UPLOAD ─── */
+.upload-group {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+}
+.upload-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  background: #fafbfc;
+  transition: border-color 0.2s, background 0.2s;
+  cursor: pointer;
+}
+.upload-zone:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+.upload-preview {
+  width: 100%;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-light);
+}
+.upload-placeholder svg {
+  width: 32px;
+  height: 32px;
+  opacity: 0.4;
+}
+.upload-placeholder p {
+  font-size: 0.8125rem;
+}
+.upload-preview img {
+  max-width: 100%;
+  max-height: 240px;
+  border-radius: 4px;
+  box-shadow: var(--shadow);
+  display: none;
+}
+.upload-preview img.visible {
+  display: block;
+}
+.upload-btn {
+  padding: 7px 18px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.upload-btn:hover { background: var(--accent-hover); }
+.file-input { display: none; }
+
+/* ─── SECTION: DATA ANALYSIS ─── */
+#section-2 .field-group textarea { min-height: 140px; }
+
+/* ─── FOOTER ─── */
+#app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+  z-index: 100;
+}
+#generate-btn {
+  padding: 10px 32px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+#generate-btn:hover { background: var(--accent-hover); }
+#generate-btn:active { transform: scale(0.98); }
+#clear-btn {
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+#clear-btn:hover {
+  color: var(--red);
+  border-color: var(--red);
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 640px) {
+  .metadata {
+    grid-template-columns: 1fr;
+  }
+  #app-header {
+    padding: 14px 16px 12px;
+  }
+  main {
+    padding: 20px 12px 80px;
+  }
+  .field-group {
+    padding: 14px;
+  }
+  .criterion-header {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+  #app-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  #generate-btn, #clear-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ─── GENERAL WRITING TIPS ─── */
+.tips-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 40px;
+  box-shadow: var(--shadow);
+}
+.tips-box h3 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+.tips-box ul {
+  list-style: none;
+  padding: 0;
+}
+.tips-box li {
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  padding: 4px 0;
+  padding-left: 18px;
+  position: relative;
+}
+.tips-box li::before {
+  content: "\2014";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+</style>
+</head>
+<body>
+
+<header id="app-header">
+  <h1>IB Physics IA Writing Tool</h1>
+  <p style="font-size:0.8rem;color:rgba(255,255,255,0.55);margin:-8px 0 12px 0;letter-spacing:0.03em;">by Adrian Waddicor Educational Software</p>
+  <div class="progress-wrapper">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+    </div>
+    <span class="progress-label" id="progress-label">0%</span>
+  </div>
+  <div class="metadata">
+    <div class="meta-field">
+      <label for="student_name">Student Name</label>
+      <input type="text" id="student_name" placeholder="e.g. Alex Chen">
+    </div>
+    <div class="meta-field">
+      <label for="research_question">Research Question</label>
+      <input type="text" id="research_question" placeholder="e.g. How does surface area affect terminal velocity?">
+    </div>
+    <div class="meta-field">
+      <label for="session_date">Session Date</label>
+      <input type="date" id="session_date">
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SECTION 1: RESEARCH DESIGN                  -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="criterion" id="section-1">
+    <div class="criterion-header">
+      <h2>Section 1: Research Design</h2>
+      <span class="marks-badge">6 marks</span>
+      <span class="section-progress" id="prog-section-1"></span>
+    </div>
+
+    <!-- 1.1.1 Research Question -->
+    <article class="field-group" data-field="rq">
+      <div class="field-header">
+        <h3>1.1.1 State your full research question</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>Write your research question naming the independent variable (parachute surface area in cm&sup2;) and the dependent variable (terminal velocity in m/s).</p>
+        <p>Describe the physical system: a small mass attached to a canopy of varying area, released from a fixed height in a controlled indoor environment.</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Hints</summary>
+        <p>Your RQ must name both variables explicitly. &ldquo;How does area affect speed?&rdquo; is too vague &mdash; include units in your framing.</p>
+        <p>Specify whether this is an experimental or secondary data investigation &mdash; the marker needs to know from the first paragraph.</p>
+      </details>
+      <textarea id="rq" placeholder="Write your research question here&hellip;"></textarea>
+    </article>
+
+    <!-- 1.1.2 Background Theory -->
+    <article class="field-group" data-field="theory">
+      <div class="field-header">
+        <h3>1.1.2 Background theory</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>Explain the concept of terminal velocity: the point at which drag force equals gravitational force, producing zero net force and constant velocity.</p>
+        <p>State the drag force equation: F<sub>drag</sub> = &frac12;&rho;CAv&sup2;, where &rho; is air density, C is the drag coefficient, A is the cross-sectional area, and v is velocity.</p>
+        <p>Explain why increasing surface area increases drag at a given speed, which lowers the terminal velocity reached by the system.</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Hints</summary>
+        <p>Define every symbol in your equations. A marker should not have to look anything up.</p>
+      </details>
+      <details class="warning-box" open>
+        <summary>Warning</summary>
+        <p>Background theory must be directly relevant &mdash; do not pad with general kinematics. Everything here should connect to why surface area affects terminal velocity.</p>
+      </details>
+      <textarea id="theory" placeholder="Explain the relevant physics theory&hellip;"></textarea>
+    </article>
+
+    <!-- 1.2.1 Variables -->
+    <article class="field-group" data-field="variables">
+      <div class="field-header">
+        <h3>1.2.1 Variables</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p><strong>Independent variable:</strong> surface area of the parachute canopy (cm&sup2;). State the values you will test and why you chose this range.</p>
+        <p><strong>Dependent variable:</strong> terminal velocity (m/s). Explain how you will determine when terminal velocity is reached and how you will measure it.</p>
+        <p><strong>Control variables:</strong> mass of the falling object, shape of canopy (circular), drop height, string length, air conditions (indoors, no wind). For each one, state the method of control.</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Hints</summary>
+        <p>For each control variable, explain HOW you controlled it, not just that you did. &ldquo;The mass was kept constant by using the same 50 g mass in every trial&rdquo; scores higher than &ldquo;mass was controlled.&rdquo;</p>
+      </details>
+      <textarea id="variables" placeholder="Describe your variables&hellip;"></textarea>
+    </article>
+
+    <!-- 1.2.2 Measurement Method -->
+    <article class="field-group" data-field="method">
+      <div class="field-header">
+        <h3>1.2.2 Measurement method</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>Describe how you measure terminal velocity &mdash; e.g. using video analysis software (Tracker) to measure displacement between frames, or light gates at two known positions near the bottom of the drop.</p>
+        <p>State the precision of your measuring instruments: ruler (&plusmn;0.5 mm), timer resolution, camera frame rate.</p>
+        <p>Explain how many trials you will run per surface area value and justify this number with reference to reducing random error.</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Hints</summary>
+        <p>If using video analysis: state the frame rate of your camera and how you calibrated the scale in the footage.</p>
+      </details>
+      <details class="warning-box" open>
+        <summary>Warning</summary>
+        <p>Avoid writing &ldquo;I repeated the experiment 3 times for accuracy.&rdquo; Instead, say: &ldquo;Three trials were conducted per surface area value so that an average could be calculated and anomalous results identified.&rdquo;</p>
+      </details>
+      <textarea id="method" placeholder="Describe your measurement method&hellip;"></textarea>
+    </article>
+
+    <!-- 1.2.3 Safety -->
+    <article class="field-group" data-field="safety">
+      <div class="field-header">
+        <h3>1.2.3 Safety and practical considerations</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>Note any safety considerations: dropping from height &mdash; ensure the drop zone is clear of people and obstacles.</p>
+        <p>Note any environmental controls: experiment conducted indoors to minimise air current variation.</p>
+      </div>
+      <textarea id="safety" placeholder="Describe safety and practical considerations&hellip;"></textarea>
+    </article>
+
+    <!-- 1.3.1 Procedure -->
+    <article class="field-group" data-field="procedure">
+      <div class="field-header">
+        <h3>1.3.1 Step-by-step procedure</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>List the specific materials: circular plastic sheet cut to 5 different areas (e.g. 50, 100, 150, 200, 250 cm&sup2;), 50 g mass, string of fixed length (30 cm), measuring tape, camera or light gates.</p>
+        <p>Write a numbered procedure specific enough that another student could replicate it without asking you any questions.</p>
+        <p>Include: how you cut and measured canopy area, how you attached the mass, the drop height, how you recorded the fall, and how you extracted velocity from your data.</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Hints</summary>
+        <p>The test of a good method section: give it to a classmate who wasn&rsquo;t in the lab. If they have questions, add that detail.</p>
+      </details>
+      <details class="warning-box" open>
+        <summary>Warning</summary>
+        <p>Do not write a generic method &mdash; every step should be specific to this investigation. Avoid phrases like &ldquo;appropriate equipment was used.&rdquo;</p>
+      </details>
+      <textarea id="procedure" placeholder="Write your step-by-step procedure&hellip;"></textarea>
+
+      <!-- Image upload: Setup photo -->
+      <div class="upload-group">
+        <label class="upload-label">Setup / Equipment Photo</label>
+        <div class="upload-zone" id="upload-zone-img_setup">
+          <div class="upload-preview" id="preview-img_setup">
+            <div class="upload-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <p>No image uploaded</p>
+            </div>
+          </div>
+          <button type="button" class="upload-btn" onclick="document.getElementById('file-img_setup').click()">Choose Image</button>
+          <input type="file" id="file-img_setup" class="file-input" accept="image/*">
+          <input type="hidden" id="img_setup" value="">
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SECTION 2: DATA ANALYSIS                   -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="criterion" id="section-2">
+    <div class="criterion-header">
+      <h2>Section 2: Data Analysis</h2>
+      <span class="marks-badge">6 marks</span>
+      <span class="section-progress" id="prog-section-2"></span>
+    </div>
+
+    <!-- 2.1.1 Raw Data -->
+    <article class="field-group" data-field="raw_data">
+      <div class="field-header">
+        <h3>2.1.1 Raw data table</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>Create a table with surface area (cm&sup2;) in the first column and terminal velocity measurements (m/s) for each trial in subsequent columns. Include a column for the mean terminal velocity.</p>
+        <p>Include uncertainty values for your measurements in the column headers.</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Hints</summary>
+        <p>All velocity values in the same column must have the same number of decimal places. If your instrument reads to 2 decimal places, record every value to 2 decimal places &mdash; including 1.20, not 1.2.</p>
+        <p>Table title goes above the table; graph title goes below the graph (as a caption). Include units in headers, not in the cells: write &ldquo;Terminal velocity / m/s&rdquo; not &ldquo;Terminal velocity (m/s measured in metres per second).&rdquo;</p>
+      </details>
+      <details class="warning-box" open>
+        <summary>Warning</summary>
+        <p>Never mix significant figures across the same column. &ldquo;1.234, 1.2, 1.23&rdquo; in one column is a precision error and will cost marks.</p>
+      </details>
+      <textarea id="raw_data" placeholder="Present your raw data table&hellip;"></textarea>
+
+      <!-- Image upload: Data table -->
+      <div class="upload-group">
+        <label class="upload-label">Data Table Image (if created externally)</label>
+        <div class="upload-zone" id="upload-zone-img_raw_data">
+          <div class="upload-preview" id="preview-img_raw_data">
+            <div class="upload-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <p>No image uploaded</p>
+            </div>
+          </div>
+          <button type="button" class="upload-btn" onclick="document.getElementById('file-img_raw_data').click()">Choose Image</button>
+          <input type="file" id="file-img_raw_data" class="file-input" accept="image/*">
+          <input type="hidden" id="img_raw_data" value="">
+        </div>
+      </div>
+    </article>
+
+    <!-- 2.2.1 Calculations -->
+    <article class="field-group" data-field="calculations">
+      <div class="field-header">
+        <h3>2.2.1 Calculate mean and uncertainty</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>Calculate the mean terminal velocity for each surface area value.</p>
+        <p>Calculate the uncertainty in the mean using half the range: uncertainty = (max &minus; min) / 2.</p>
+        <p>Show at least one sample calculation in full, clearly labelling inputs and outputs.</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Hints</summary>
+        <p>Sample calculations should show the formula, substitution with values and units, and the final answer. One worked example is enough &mdash; do not repeat it for every row.</p>
+        <p>Propagate uncertainties through any further calculations. If you calculate v&sup2;, the percentage uncertainty doubles.</p>
+      </details>
+      <textarea id="calculations" placeholder="Show your calculations&hellip;"></textarea>
+
+      <!-- Image upload: Calculation -->
+      <div class="upload-group">
+        <label class="upload-label">Sample Calculation Photo</label>
+        <div class="upload-zone" id="upload-zone-img_calc">
+          <div class="upload-preview" id="preview-img_calc">
+            <div class="upload-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <p>No image uploaded</p>
+            </div>
+          </div>
+          <button type="button" class="upload-btn" onclick="document.getElementById('file-img_calc').click()">Choose Image</button>
+          <input type="file" id="file-img_calc" class="file-input" accept="image/*">
+          <input type="hidden" id="img_calc" value="">
+        </div>
+      </div>
+    </article>
+
+    <!-- 2.2.2 Graph -->
+    <article class="field-group" data-field="graph_analysis">
+      <div class="field-header">
+        <h3>2.2.2 Graph description and gradient</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>Plot mean terminal velocity (y-axis, m/s) against surface area (x-axis, cm&sup2;) with error bars on each point reflecting your uncertainty.</p>
+        <p>Add a best-fit line or curve. If the relationship is non-linear (theory predicts v &prop; A<sup>&minus;0.5</sup>), consider plotting v&sup2; vs 1/A to linearise.</p>
+        <p>Determine the gradient of your best-fit line with its uncertainty using max and min gradient lines through the error bars.</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Hints</summary>
+        <p>Both axes need: a label, the quantity, and units (e.g. &ldquo;Terminal velocity / m s&supmin;&sup1;&rdquo;). The origin does not need to be included unless physically meaningful.</p>
+        <p>If using software (Logger Pro, Desmos, Google Sheets): state which software you used and how the fit was applied. Do not just paste a graph with no explanation.</p>
+      </details>
+      <details class="warning-box" open>
+        <summary>Warning</summary>
+        <p>A best-fit line is NOT a dot-to-dot. It should be smooth and balanced through the data. Draw it with a ruler or use software &mdash; freehand curves are not acceptable.</p>
+      </details>
+      <textarea id="graph_analysis" placeholder="Describe your graph and gradient&hellip;"></textarea>
+
+      <!-- Image upload: Graph -->
+      <div class="upload-group">
+        <label class="upload-label">Graph Image</label>
+        <div class="upload-zone" id="upload-zone-img_graph">
+          <div class="upload-preview" id="preview-img_graph">
+            <div class="upload-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <p>No image uploaded</p>
+            </div>
+          </div>
+          <button type="button" class="upload-btn" onclick="document.getElementById('file-img_graph').click()">Choose Image</button>
+          <input type="file" id="file-img_graph" class="file-input" accept="image/*">
+          <input type="hidden" id="img_graph" value="">
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SECTION 3: CONCLUSION                      -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="criterion" id="section-3">
+    <div class="criterion-header">
+      <h2>Section 3: Conclusion</h2>
+      <span class="marks-badge">6 marks</span>
+      <span class="section-progress" id="prog-section-3"></span>
+    </div>
+
+    <!-- 3.1.1 Answer RQ -->
+    <article class="field-group" data-field="conclusion">
+      <div class="field-header">
+        <h3>3.1.1 State and justify your conclusion</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>Directly answer the research question: as the surface area of the parachute increases, the terminal velocity decreases. State the direction and nature of the relationship (e.g. inverse, non-linear).</p>
+        <p>Refer specifically to your data: &ldquo;As surface area increased from 50 cm&sup2; to 250 cm&sup2;, mean terminal velocity decreased from X &plusmn; &delta;X m/s to Y &plusmn; &delta;Y m/s.&rdquo;</p>
+        <p>State whether your graph supports a linear or non-linear relationship and what this implies physically.</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Hints</summary>
+        <p>Your conclusion must be consistent with your processed data including uncertainties. If error bars overlap between two data points, you cannot claim a significant difference between those values.</p>
+      </details>
+      <details class="warning-box" open>
+        <summary>Warning</summary>
+        <p>Do not introduce new data or claims here. Every statement must follow from your analysis section.</p>
+      </details>
+      <textarea id="conclusion" placeholder="State your conclusion&hellip;"></textarea>
+    </article>
+
+    <!-- 3.2.1 Compare to theory -->
+    <article class="field-group" data-field="comparison">
+      <div class="field-header">
+        <h3>3.2.1 Comparison to accepted scientific context</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>Return to the drag force equation from your introduction: does your data support the predicted relationship v &prop; A<sup>&minus;0.5</sup>? Explain why or why not using your gradient.</p>
+        <p>Compare your measured terminal velocities to any published or theoretical values where available, calculating a percentage difference.</p>
+        <p>Explain any deviation from the theoretical prediction with reference to your uncertainties &mdash; is the discrepancy within your experimental uncertainty?</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Hints</summary>
+        <p>Cite all sources in sufficient detail: author, title, year, and URL or publisher. A URL alone is not a complete citation.</p>
+      </details>
+      <details class="warning-box" open>
+        <summary>Warning</summary>
+        <p>Superficial comparison (&ldquo;my results agree with theory&rdquo;) scores 1&ndash;2. Justify the comparison: &ldquo;my experimental gradient of X &plusmn; &delta;X is consistent with the theoretical value of Y, since Y lies within the uncertainty range.&rdquo;</p>
+      </details>
+      <textarea id="comparison" placeholder="Compare your results to theory&hellip;"></textarea>
+    </article>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- SECTION 4: EVALUATION                      -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="criterion" id="section-4">
+    <div class="criterion-header">
+      <h2>Section 4: Evaluation</h2>
+      <span class="marks-badge">6 marks</span>
+      <span class="section-progress" id="prog-section-4"></span>
+    </div>
+
+    <!-- 4.1.1 Weaknesses -->
+    <article class="field-group" data-field="weaknesses">
+      <div class="field-header">
+        <h3>4.1.1 Identify specific weaknesses and their impact</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>For each weakness, describe: (1) what the weakness is, (2) how it specifically affected your data or conclusion, and (3) a realistic, specific improvement.</p>
+        <p><strong>Example &mdash; Canopy shape deformation:</strong> the parachute may not have maintained a constant circular profile during the fall, meaning the effective surface area differed from the measured area, potentially overestimating terminal velocity at larger sizes.</p>
+        <p><strong>Example &mdash; Insufficient drop height:</strong> if the drop height was insufficient for all parachute sizes to reach terminal velocity, the measured velocity is not truly terminal, and the relationship between area and v<sub>t</sub> is understated.</p>
+        <p><strong>Example &mdash; Air currents:</strong> even indoors, slight air movement could systematically affect results for larger parachutes more than smaller ones, introducing a confounding variable.</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Hints</summary>
+        <p>Rank your weaknesses by impact on the conclusion. The most significant weakness should come first and receive the most discussion.</p>
+      </details>
+      <details class="warning-box" open>
+        <summary>Warning</summary>
+        <p>&ldquo;Human error&rdquo; and &ldquo;measurement error&rdquo; are generic and score 1&ndash;2. Name the specific source: e.g. &ldquo;parallax error when reading the ruler scale&rdquo; or &ldquo;variation in release angle between trials.&rdquo;</p>
+      </details>
+      <textarea id="weaknesses" placeholder="Identify weaknesses and their impact&hellip;"></textarea>
+    </article>
+
+    <!-- 4.2.1 Improvements -->
+    <article class="field-group" data-field="improvements">
+      <div class="field-header">
+        <h3>4.2.1 Propose specific, realistic improvements</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>For each weakness, propose an improvement that directly addresses it. Generic improvements (&ldquo;use better equipment&rdquo;) do not score.</p>
+        <p><strong>Improvement for canopy deformation:</strong> attach a lightweight rigid ring around the perimeter of each canopy to maintain a consistent circular profile during the fall.</p>
+        <p><strong>Improvement for insufficient drop height:</strong> conduct a preliminary test calculating the theoretical terminal velocity for each canopy size and ensure drop height is at least 3&times; the distance needed to reach 99% of v<sub>t</sub>.</p>
+        <p><strong>Improvement for air currents:</strong> use a purpose-built vertical drop tube (e.g. transparent acrylic cylinder) to eliminate lateral air movement entirely.</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Hints</summary>
+        <p>Each improvement must be matched to a specific weakness. If you list 4 weaknesses and 2 improvements, you will lose marks &mdash; every weakness needs a corresponding improvement.</p>
+      </details>
+      <details class="warning-box" open>
+        <summary>Warning</summary>
+        <p>Extensions (more trials, wider range) are not improvements to weaknesses &mdash; they are extensions to scope. Keep these separate or omit them unless asked.</p>
+      </details>
+      <textarea id="improvements" placeholder="Propose specific improvements&hellip;"></textarea>
+    </article>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- GENERAL WRITING TIPS                       -->
+  <!-- ════════════════════════════════════════════ -->
+  <div class="tips-box">
+    <h3>General Writing Hints &mdash; apply across all sections</h3>
+    <ul>
+      <li>Write in the past tense for what you did; present tense for what the theory says.</li>
+      <li>Use passive voice for methodology: &ldquo;The mass was released from a height of 2.0 m&rdquo; rather than &ldquo;I dropped the mass.&rdquo;</li>
+      <li>Every numerical claim needs a unit. Every unit needs a numerical claim.</li>
+      <li>When you use a word like &ldquo;significant,&rdquo; &ldquo;large,&rdquo; or &ldquo;small,&rdquo; follow it immediately with the actual value.</li>
+      <li>Do not use the word &ldquo;prove&rdquo; &mdash; experiments support, suggest, or are consistent with a conclusion.</li>
+      <li>Avoid personal opinion language: &ldquo;I think,&rdquo; &ldquo;I believe,&rdquo; &ldquo;in my opinion&rdquo; have no place in a scientific report.</li>
+    </ul>
+  </div>
+
+</main>
+
+<footer id="app-footer">
+  <button type="button" id="generate-btn">Generate Word Document</button>
+  <button type="button" id="clear-btn">Clear All Data</button>
+</footer>
+
+<!-- CDN libraries -->
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+
+<script>
+/*
+ * Phase 3: Auto-save logic (localStorage read/write on every input event)
+ * Phase 4: Image upload (FileReader -> base64, preview thumbnails)
+ * Phase 5: Progress indicator (per-section and overall completion %)
+ * Phase 6: Word generation (Docx.js document assembly from form data + images)
+ */
+
+const STORAGE_KEY = 'ib-physics-ia-form';
+
+const TEXT_FIELDS = [
+  'student_name', 'research_question', 'session_date',
+  'rq', 'theory', 'variables', 'method', 'safety', 'procedure',
+  'raw_data', 'calculations', 'graph_analysis',
+  'conclusion', 'comparison',
+  'weaknesses', 'improvements'
+];
+
+const IMAGE_FIELDS = [
+  'img_setup', 'img_raw_data', 'img_calc', 'img_graph'
+];
+
+const SECTION_FIELDS = {
+  'section-1': ['rq', 'theory', 'variables', 'method', 'safety', 'procedure', 'img_setup'],
+  'section-2': ['raw_data', 'img_raw_data', 'calculations', 'img_calc', 'graph_analysis', 'img_graph'],
+  'section-3': ['conclusion', 'comparison'],
+  'section-4': ['weaknesses', 'improvements'],
+};
+
+function getFormData() {
+  var data = {};
+  TEXT_FIELDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) data[id] = el.value;
+  });
+  IMAGE_FIELDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) data[id] = el.value || '';
+  });
+  return data;
+}
+
+function saveForm() {
+  var data = getFormData();
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.warn('Auto-save failed:', e);
+  }
+  updateProgress();
+}
+
+function loadForm() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    var data = JSON.parse(raw);
+    TEXT_FIELDS.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && data[id] !== undefined) el.value = data[id];
+    });
+    IMAGE_FIELDS.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && data[id] !== undefined) el.value = data[id];
+    });
+  } catch (e) {
+    console.warn('Failed to load saved data:', e);
+  }
+}
+
+function clearForm() {
+  if (!confirm('Clear all form data? This cannot be undone.')) return;
+  TEXT_FIELDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  IMAGE_FIELDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+    resetImagePreview(id);
+  });
+  localStorage.removeItem(STORAGE_KEY);
+  updateProgress();
+}
+
+function setDefaultDate() {
+  var el = document.getElementById('session_date');
+  if (el && !el.value) {
+    var today = new Date();
+    var yyyy = today.getFullYear();
+    var mm = String(today.getMonth() + 1).padStart(2, '0');
+    var dd = String(today.getDate()).padStart(2, '0');
+    el.value = yyyy + '-' + mm + '-' + dd;
+  }
+}
+
+/* ─── Progress indicator ─── */
+
+function isFieldComplete(id) {
+  var el = document.getElementById(id);
+  if (!el) return false;
+  if (id.indexOf('img_') === 0) {
+    return !!(el.value && el.value.indexOf('data:image/') === 0);
+  }
+  return el.value.trim().length > 0;
+}
+
+function updateProgress() {
+  var totalFields = 0;
+  var totalCompleted = 0;
+
+  Object.keys(SECTION_FIELDS).forEach(function(sectionId) {
+    var fields = SECTION_FIELDS[sectionId];
+    var completed = 0;
+
+    fields.forEach(function(id) {
+      totalFields++;
+      var done = isFieldComplete(id);
+      if (done) { completed++; totalCompleted++; }
+
+      var fieldGroup = document.querySelector('.field-group[data-field="' + id + '"]');
+      if (fieldGroup) {
+        var dot = fieldGroup.querySelector('.field-status');
+        if (dot) {
+          if (done) dot.classList.add('completed');
+          else dot.classList.remove('completed');
+        }
+      }
+    });
+
+    var progEl = document.getElementById('prog-' + sectionId);
+    if (progEl) {
+      progEl.textContent = completed + '/' + fields.length;
+      if (completed === fields.length) progEl.classList.add('complete');
+      else progEl.classList.remove('complete');
+    }
+  });
+
+  var pct = totalFields > 0 ? Math.round(totalCompleted / totalFields * 100) : 0;
+  var fill = document.getElementById('progress-fill');
+  var label = document.getElementById('progress-label');
+  if (fill) fill.style.width = pct + '%';
+  if (label) label.textContent = pct + '%';
+}
+
+/* ─── Image upload & preview ─── */
+
+var IMAGE_CONFIGS = [
+  { fileId: 'file-img_setup',     hiddenId: 'img_setup',     previewId: 'preview-img_setup' },
+  { fileId: 'file-img_raw_data',  hiddenId: 'img_raw_data',  previewId: 'preview-img_raw_data' },
+  { fileId: 'file-img_calc',      hiddenId: 'img_calc',      previewId: 'preview-img_calc' },
+  { fileId: 'file-img_graph',     hiddenId: 'img_graph',     previewId: 'preview-img_graph' }
+];
+
+function showImagePreview(previewEl, dataUrl) {
+  previewEl.innerHTML = '<img src="' + dataUrl.replace(/"/g, '&quot;') + '" class="visible" alt="Uploaded image">';
+}
+
+function resetImagePreview(id) {
+  var preview = document.getElementById('preview-' + id);
+  if (!preview) return;
+  preview.innerHTML = '<div class="upload-placeholder">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' +
+    '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>' +
+    '<circle cx="8.5" cy="8.5" r="1.5"/>' +
+    '<polyline points="21 15 16 10 5 21"/></svg>' +
+    '<p>No image uploaded</p></div>';
+}
+
+function restoreImagePreview(id, dataUrl) {
+  if (!dataUrl || !dataUrl.startsWith('data:image/')) return;
+  var preview = document.getElementById('preview-' + id);
+  if (preview) showImagePreview(preview, dataUrl);
+}
+
+function setupImageUpload(config) {
+  var fileInput = document.getElementById(config.fileId);
+  var hiddenInput = document.getElementById(config.hiddenId);
+  var preview = document.getElementById(config.previewId);
+  if (!fileInput || !hiddenInput || !preview) return;
+
+  fileInput.addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file.');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var dataUrl = ev.target.result;
+      hiddenInput.value = dataUrl;
+      showImagePreview(preview, dataUrl);
+      saveForm();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  if (hiddenInput.value && hiddenInput.value.startsWith('data:image/')) {
+    showImagePreview(preview, hiddenInput.value);
+  }
+}
+
+/* ─── Word generation ─── */
+
+var IMAGE_WIDTH_PX = 451;
+var IMAGE_HEIGHT_PX = 338;
+
+function para(text, opts) {
+  opts = opts || {};
+  var children;
+  if (typeof text === 'string') {
+    children = [new docx.TextRun({ text: text, font: 'Times New Roman', size: 24 })];
+  } else {
+    children = text;
+  }
+  return new docx.Paragraph({
+    spacing: { line: 480, lineRule: docx.LineRuleType.AUTO, before: opts.before || 0, after: opts.after || 0 },
+    alignment: opts.alignment || docx.AlignmentType.LEFT,
+    children: children,
+  });
+}
+
+function sectionH(text) {
+  return new docx.Paragraph({
+    spacing: { line: 480, lineRule: docx.LineRuleType.AUTO, before: 360, after: 200 },
+    children: [new docx.TextRun({ text: text, font: 'Times New Roman', size: 28, bold: true })],
+  });
+}
+
+function subsectionH(text) {
+  return new docx.Paragraph({
+    spacing: { line: 480, lineRule: docx.LineRuleType.AUTO, before: 240, after: 160 },
+    children: [new docx.TextRun({ text: text, font: 'Times New Roman', size: 26, bold: true })],
+  });
+}
+
+function emptyPara() {
+  return new docx.Paragraph({
+    spacing: { line: 480, lineRule: docx.LineRuleType.AUTO },
+    children: [new docx.TextRun({ text: '', font: 'Times New Roman', size: 24 })],
+  });
+}
+
+function imagePara(dataUrl, caption) {
+  if (!dataUrl || !dataUrl.startsWith('data:image/')) return [];
+  try {
+    var type;
+    if (dataUrl.indexOf('image/png') > 0) type = 'png';
+    else if (dataUrl.indexOf('image/jpeg') > 0) type = 'jpg';
+    else if (dataUrl.indexOf('image/gif') > 0) type = 'gif';
+    else type = 'png';
+    console.log('Embedding image: type=' + type + ', size=' + (dataUrl.length / 1024).toFixed(1) + 'KB');
+    return [
+      new docx.Paragraph({
+        spacing: { line: 480, lineRule: docx.LineRuleType.AUTO, before: 200, after: 60 },
+        alignment: docx.AlignmentType.CENTER,
+        children: [
+          new docx.ImageRun({
+            data: dataUrl,
+            type: type,
+            transformation: {
+              width: IMAGE_WIDTH_PX,
+              height: IMAGE_HEIGHT_PX,
+            },
+          }),
+        ],
+      }),
+      para(caption, { before: 60, after: 200, alignment: docx.AlignmentType.CENTER }),
+    ];
+  } catch (e) {
+    console.error('Image embed failed:', e);
+    return [];
+  }
+}
+
+function subtitleBlock(name, text) {
+  return [subsectionH(name)].concat(
+    (text && text.trim().length > 0) ? [para(text)] : [emptyPara()]
+  );
+}
+
+function buildTitlePage(data) {
+  return [
+    emptyPara(), emptyPara(), emptyPara(), emptyPara(),
+    emptyPara(), emptyPara(),
+    para('IB Physics Internal Assessment', { alignment: docx.AlignmentType.CENTER }),
+    emptyPara(),
+    para([
+      new docx.TextRun({ text: data.research_question || '', font: 'Times New Roman', size: 28, bold: true }),
+    ], { alignment: docx.AlignmentType.CENTER }),
+    emptyPara(),
+    para('Student: ' + (data.student_name || '____________________'), { alignment: docx.AlignmentType.CENTER }),
+    para('Date: ' + (data.session_date || '____________________'), { alignment: docx.AlignmentType.CENTER }),
+  ];
+}
+
+function buildResearchDesign(data) {
+  return [].concat(
+    sectionH('Section 1: Research Design'),
+    subtitleBlock('1.1.1 Research Question', data.rq),
+    subtitleBlock('1.1.2 Background Theory', data.theory),
+    subtitleBlock('1.2.1 Variables', data.variables),
+    subtitleBlock('1.2.2 Measurement Method', data.method),
+    subtitleBlock('1.2.3 Safety and Practical Considerations', data.safety),
+    subtitleBlock('1.3.1 Procedure', data.procedure),
+    imagePara(data.img_setup, 'Figure 1: Experimental setup'),
+    emptyPara()
+  );
+}
+
+function buildDataAnalysis(data) {
+  return [].concat(
+    sectionH('Section 2: Data Analysis'),
+    subtitleBlock('2.1.1 Raw Data', data.raw_data),
+    imagePara(data.img_raw_data, 'Figure 2: Data table'),
+    subtitleBlock('2.2.1 Mean and Uncertainty', data.calculations),
+    imagePara(data.img_calc, 'Figure 3: Sample calculation'),
+    subtitleBlock('2.2.2 Graph Analysis', data.graph_analysis),
+    imagePara(data.img_graph, 'Figure 4: Graph'),
+    emptyPara()
+  );
+}
+
+function buildConclusion(data) {
+  return [].concat(
+    sectionH('Section 3: Conclusion'),
+    subtitleBlock('3.1.1 Answering the Research Question', data.conclusion),
+    subtitleBlock('3.2.1 Comparison to Accepted Scientific Context', data.comparison),
+    emptyPara()
+  );
+}
+
+function buildEvaluation(data) {
+  return [].concat(
+    sectionH('Section 4: Evaluation'),
+    subtitleBlock('4.1.1 Weaknesses and Limitations', data.weaknesses),
+    subtitleBlock('4.2.1 Improvements', data.improvements)
+  );
+}
+
+var A4_PAGE = { width: 11906, height: 16838 };
+var ONE_INCH = 1440;
+
+function generateWordDoc() {
+  if (typeof docx === 'undefined' || typeof saveAs === 'undefined') {
+    alert('Required libraries are not loaded. Please check your internet connection and refresh the page.');
+    return;
+  }
+
+  var data = getFormData();
+
+  if (!data.research_question) {
+    alert('Please enter your research question before generating the Word document.');
+    return;
+  }
+
+  var doc = new docx.Document({
+    sections: [
+      {
+        properties: {
+          page: {
+            size: A4_PAGE,
+            margin: { top: ONE_INCH, right: ONE_INCH, bottom: ONE_INCH, left: ONE_INCH },
+          },
+        },
+        children: buildTitlePage(data),
+      },
+      {
+        properties: {
+          page: {
+            size: A4_PAGE,
+            margin: { top: ONE_INCH, right: ONE_INCH, bottom: ONE_INCH, left: ONE_INCH },
+          },
+        },
+        footers: {
+          default: new docx.Footer({
+            children: [
+              new docx.Paragraph({
+                alignment: docx.AlignmentType.CENTER,
+                children: [
+                  new docx.TextRun({
+                    children: [docx.PageNumber.CURRENT],
+                    font: 'Times New Roman',
+                    size: 20,
+                  }),
+                ],
+              }),
+            ],
+          }),
+        },
+        children: [].concat(
+          buildResearchDesign(data),
+          buildDataAnalysis(data),
+          buildConclusion(data),
+          buildEvaluation(data)
+        ),
+      },
+    ],
+  });
+
+  var baseName = (data.research_question || 'Physics IA').replace(/[\\/:*?"<>|]/g, '').trim();
+  var filename = baseName + ' - IA.docx';
+
+  docx.Packer.toBlob(doc).then(function(blob) {
+    saveAs(blob, filename);
+  }).catch(function(err) {
+    console.error('Generation failed:', err);
+    alert('Failed to generate the Word document. Please try again.');
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  loadForm();
+  setDefaultDate();
+
+  TEXT_FIELDS.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', saveForm);
+      el.addEventListener('change', saveForm);
+    }
+  });
+
+  IMAGE_CONFIGS.forEach(setupImageUpload);
+
+  document.getElementById('clear-btn').addEventListener('click', clearForm);
+  document.getElementById('generate-btn').addEventListener('click', generateWordDoc);
+
+  updateProgress();
+});
+
+console.log('IB Physics IA Writing Tool loaded');
+</script>
+
+</body>
+</html>
