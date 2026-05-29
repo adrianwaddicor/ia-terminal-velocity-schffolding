@@ -66,10 +66,18 @@ The form collects text and images for each subsection and assembles them into a 
 |---|---|---|---|
 | `raw_data` | 2.1.1 Raw data table | textarea | §2.1.1 |
 | `img_raw_data` | Data table (if created externally) | image upload | §2.1.1 |
-| `calculations` | 2.2.1 Mean and uncertainty | textarea | §2.2.1 |
-| `img_calc` | Sample calculation photo | image upload | §2.2.1 |
-| `graph_analysis` | 2.2.2 Graph description & gradient | textarea | §2.2.2 |
-| `img_graph` | Graph image | image upload | §2.2.2 |
+| `calculations` | 2.1.2 Mean and uncertainty | textarea | §2.1.2 |
+| `img_calc` | Sample calculation photo | image upload | §2.1.2 |
+| `proc_data_1` | 2.1.3 Processed data table 1 | textarea | §2.1.3 |
+| `img_proc_data_1` | Processed data table image | image upload | §2.1.3 |
+| `graph_raw` | 2.1.4 Raw data graph (terminal velocity vs surface area) | textarea | §2.1.4 |
+| `img_graph_raw` | Raw graph image | image upload | §2.1.4 |
+| `lin_processing` | 2.2.1 Linearisation data processing | textarea | §2.2.1 |
+| `img_lin_processing` | Linearisation working image | image upload | §2.2.1 |
+| `lin_table` | 2.2.2 Linearised data table | textarea | §2.2.2 |
+| `img_lin_table` | Linearised data table image | image upload | §2.2.2 |
+| `graph_lin` | 2.2.3 Linearised graph (terminal velocity² vs 1/surface area) | textarea | §2.2.3 |
+| `img_graph_lin` | Linearised graph image | image upload | §2.2.3 |
 
 ### Conclusion
 
@@ -113,8 +121,16 @@ Key: `ib-physics-ia-form`
   "img_raw_data": "data:image/png;base64,...",
   "calculations": "...",
   "img_calc": "data:image/png;base64,...",
-  "graph_analysis": "...",
-  "img_graph": "data:image/png;base64,...",
+  "proc_data_1": "...",
+  "img_proc_data_1": "data:image/png;base64,...",
+  "graph_raw": "...",
+  "img_graph_raw": "data:image/png;base64,...",
+  "lin_processing": "...",
+  "img_lin_processing": "data:image/png;base64,...",
+  "lin_table": "...",
+  "img_lin_table": "data:image/png;base64,...",
+  "graph_lin": "...",
+  "img_graph_lin": "data:image/png;base64,...",
   "conclusion": "...",
   "comparison": "...",
   "weaknesses": "...",
@@ -146,9 +162,15 @@ Key: `ib-physics-ia-form`
    - 1.2.3 Safety considerations
    - 1.3.1 Procedure *(plus setup image)*
 3. **Section 2: Data Analysis**
-   - 2.1.1 Raw data *(plus data table image)*
-   - 2.2.1 Mean and uncertainty *(plus calculation image)*
-   - 2.2.2 Graph *(plus graph image)*
+   - **2.1 Raw Data Processing**
+     - 2.1.1 Raw data *(plus data table image)*
+     - 2.1.2 Mean and uncertainty *(plus calculation image)*
+     - 2.1.3 Processed data table 1 *(plus table image)*
+     - 2.1.4 Raw data graph *(plus graph image)*
+   - **2.2 Linearisation**
+     - 2.2.1 Linearisation data processing *(plus working image)*
+     - 2.2.2 Linearised data table *(plus table image)*
+     - 2.2.3 Linearised graph *(plus graph image)*
 4. **Section 3: Conclusion**
    - 3.1.1 Answer the RQ
    - 3.2.1 Comparison to theory

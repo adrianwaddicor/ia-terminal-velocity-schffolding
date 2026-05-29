@@ -609,7 +609,7 @@
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
-        <p>Build a clean data table. Put your surface areas in the first column, followed by columns for your individual trial speeds, and finish with a column for the calculated average speed.</p>
+        <p>Build a clean data table. Put your surface areas in the first column, followed by columns for your individual trial speeds.</p>
         <p>Don't forget to include your absolute uncertainties right up in the column headers.</p>
       </div>
       <details class="hint-box" open>
@@ -645,7 +645,7 @@
 
     <article class="field-group" data-field="calculations">
       <div class="field-header">
-        <h3>2.2.1 Calculate mean and uncertainty</h3>
+        <h3>2.1.2 Calculate mean and uncertainty</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -655,7 +655,7 @@
       </div>
       <details class="hint-box" open>
         <summary>Quick Tips</summary>
-        <p>Your sample calculation needs to show the raw equation, how you swapped in your numbers, and the final answer with units. Just show one example—no need to repeat it for all five rows.</p>
+        <p>Your sample calculation needs to show the raw equation, how you swapped in your numbers, and the final answer with units. Just show one example. No need to repeat it for all five rows.</p>
         <p>If you did extra math (like squaring the velocity), remember that percentage uncertainties change (they double if you square the value!).</p>
       </details>
       <textarea id="calculations" placeholder="Show your sample math steps here…"></textarea>
@@ -680,31 +680,29 @@
       </div>
     </article>
 
-    <article class="field-group" data-field="graph_analysis">
+    <article class="field-group" data-field="proc_data_1">
       <div class="field-header">
-        <h3>2.2.2 Graph description and gradient</h3>
+        <h3>2.1.3 Processed Data Table 1</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
-        <p>Plot your average terminal velocity on the y-axis against surface area on the x-axis. Make sure every single data point has a clear error bar matching your calculated uncertainty.</p>
-        <p>Draw a smooth trendline. If it looks like a curve, think about linearising your data (like plotting velocity squared against 1/Area) to turn it into a straight line.</p>
-        <p>Find the slope (gradient) of your best-fit line. Use maximum and minimum lines of best fit through your error bars to figure out the uncertainty of that slope.</p>
+        <p>Build a processed data table with the following columns: surface area, uncertainty in surface area, mean terminal velocity, and absolute uncertainty in terminal velocity. This table organises your raw measurements into the values needed for plotting the raw data graph.</p>
       </div>
       <details class="hint-box" open>
         <summary>Quick Tips</summary>
-        <p>Label both axes clearly with quantities and units (e.g., "Terminal velocity / m s⁻¹"). Only include the point (0,0) if it makes physical sense for your experiment.</p>
-        <p>If you used Logger Pro, Desmos, or Excel, say so! Briefly explain how you applied the fit instead of just pasting a mystery chart.</p>
+        <p>Carry the uncertainty values from your earlier calculations. Keep decimal places consistent within each column.</p>
+        <p>Remember that the absolute uncertainty in terminal velocity comes from the range method: (max &minus; min) / 2.</p>
       </details>
       <details class="warning-box" open>
         <summary>Watch Out</summary>
-        <p>A trendline is NOT a connect-the-dots game. It should be a balanced, clean line running through the middle of your points. Use graphing software or a physical ruler—freehand squiggles won't cut it.</p>
+        <p>Don't round intermediate values too aggressively &mdash; keep one extra significant figure during calculations and only round to your final uncertainty precision at the end.</p>
       </details>
-      <textarea id="graph_analysis" placeholder="Describe your graph trends and slope analysis…"></textarea>
+      <textarea id="proc_data_1" placeholder="Paste or type your processed data table here&hellip;"></textarea>
 
       <div class="upload-group">
-        <label class="upload-label">Graph Image</label>
-        <div class="upload-zone" id="upload-zone-img_graph">
-          <div class="upload-preview" id="preview-img_graph">
+        <label class="upload-label">Processed Data Table Image</label>
+        <div class="upload-zone" id="upload-zone-img_proc_data_1">
+          <div class="upload-preview" id="preview-img_proc_data_1">
             <div class="upload-placeholder">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
@@ -714,11 +712,173 @@
               <p>No image uploaded</p>
             </div>
           </div>
-          <button type="button" class="upload-btn" onclick="document.getElementById('file-img_graph').click()">Choose Image</button>
-          <input type="file" id="file-img_graph" class="file-input" accept="image/*">
-          <input type="hidden" id="img_graph" value="">
+          <button type="button" class="upload-btn" onclick="document.getElementById('file-img_proc_data_1').click()">Choose Image</button>
+          <input type="file" id="file-img_proc_data_1" class="file-input" accept="image/*">
+          <input type="hidden" id="img_proc_data_1" value="">
         </div>
       </div>
+    </article>
+
+    <article class="field-group" data-field="graph_raw">
+      <div class="field-header">
+        <h3>2.1.4 Raw Data Graph: Terminal Velocity vs Surface Area</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>Plot your average terminal velocity on the y-axis against surface area on the x-axis to show the raw data relationship. Include error bars on every data point reflecting your calculated uncertainties.</p>
+        <p>Draw a smooth curve or trendline by hand. Do not force a straight line — the purpose here is to observe the shape of the data.</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Quick Tips</summary>
+        <p>Label both axes clearly with quantities and units (e.g., "Terminal velocity / m s⁻¹"). Only include the point (0,0) if it makes physical sense for your experiment.</p>
+        <p>Describe the relationship you see — is it linear, curved, or something else? This is your opportunity to justify <em>why</em> you will linearise in the next step.</p>
+      </details>
+      <details class="warning-box" open>
+        <summary>Watch Out</summary>
+        <p>A trendline is NOT a connect-the-dots game. Use graphing software or a physical ruler — freehand squiggles won't cut it.</p>
+      </details>
+
+      <div class="upload-group">
+        <label class="upload-label">Raw Graph Image</label>
+        <div class="upload-zone" id="upload-zone-img_graph_raw">
+          <div class="upload-preview" id="preview-img_graph_raw">
+            <div class="upload-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <p>No image uploaded</p>
+            </div>
+          </div>
+          <button type="button" class="upload-btn" onclick="document.getElementById('file-img_graph_raw').click()">Choose Image</button>
+          <input type="file" id="file-img_graph_raw" class="file-input" accept="image/*">
+          <input type="hidden" id="img_graph_raw" value="">
+        </div>
+      </div>
+
+      <textarea id="graph_raw" placeholder="Interpret your raw data graph — what does the shape suggest about the relationship? What evidence points towards a linearisation (curved line, y-intercept, etc.)?"></textarea>
+    </article>
+
+    <article class="field-group" data-field="lin_processing">
+      <div class="field-header">
+        <h3>2.2.1 Linearisation Data Processing</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>Explain how you transform your data to test the relationship v² &prop; 1/A. Show the formulas for calculating 1/surface area with its propagated uncertainty, mean terminal velocity squared with its propagated uncertainty (remember: percentage uncertainty doubles when you square), and any other derived quantities.</p>
+        <p>Include one full sample calculation using the first row of your data.</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Quick Tips</summary>
+        <p>To propagate uncertainty for 1/A, use: &Delta;(1/A) = &Delta;A / A².</p>
+        <p>When squaring velocity, the percentage uncertainty doubles: (v &plusmn; &Delta;v)² gives %&Delta;(v²) = 2 &times; %&Delta;v.</p>
+      </details>
+      <details class="warning-box" open>
+        <summary>Watch Out</summary>
+        <p>Show every step of your uncertainty propagation &mdash; don't just state the final values. The marker needs to see your working.</p>
+      </details>
+      <textarea id="lin_processing" placeholder="Describe your linearisation calculations step by step&hellip;"></textarea>
+
+      <div class="upload-group">
+        <label class="upload-label">Linearisation Working Image</label>
+        <div class="upload-zone" id="upload-zone-img_lin_processing">
+          <div class="upload-preview" id="preview-img_lin_processing">
+            <div class="upload-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <p>No image uploaded</p>
+            </div>
+          </div>
+          <button type="button" class="upload-btn" onclick="document.getElementById('file-img_lin_processing').click()">Choose Image</button>
+          <input type="file" id="file-img_lin_processing" class="file-input" accept="image/*">
+          <input type="hidden" id="img_lin_processing" value="">
+        </div>
+      </div>
+    </article>
+
+    <article class="field-group" data-field="lin_table">
+      <div class="field-header">
+        <h3>2.2.2 Linearised Data Table</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>Build a linearised data table with the following columns: 1/surface area and its uncertainty, mean terminal velocity squared, percentage uncertainty in terminal velocity squared, and absolute uncertainty in terminal velocity squared. This table provides the transformed values needed to plot the linearised graph.</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Quick Tips</summary>
+        <p>Use the uncertainty propagation rules you described in the previous section. Keep decimal places consistent within each column.</p>
+        <p>Round your final uncertainty to one significant figure and round the associated value to match its precision.</p>
+      </details>
+      <details class="warning-box" open>
+        <summary>Watch Out</summary>
+        <p>Double-check that your 1/Area values are not rounded to nothing &mdash; if your areas are small, 1/A can be a large number. Keep enough decimal places to avoid losing precision.</p>
+      </details>
+      <textarea id="lin_table" placeholder="Paste or type your linearised data table here&hellip;"></textarea>
+
+      <div class="upload-group">
+        <label class="upload-label">Linearised Data Table Image</label>
+        <div class="upload-zone" id="upload-zone-img_lin_table">
+          <div class="upload-preview" id="preview-img_lin_table">
+            <div class="upload-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <p>No image uploaded</p>
+            </div>
+          </div>
+          <button type="button" class="upload-btn" onclick="document.getElementById('file-img_lin_table').click()">Choose Image</button>
+          <input type="file" id="file-img_lin_table" class="file-input" accept="image/*">
+          <input type="hidden" id="img_lin_table" value="">
+        </div>
+      </div>
+    </article>
+
+    <article class="field-group" data-field="graph_lin">
+      <div class="field-header">
+        <h3>2.2.3 Linearised Graph: Terminal Velocity² vs 1/Surface Area</h3>
+        <span class="field-status"></span>
+      </div>
+      <div class="prompt-box">
+        <p>Plot terminal velocity squared on the y-axis against 1/surface area on the x-axis. Draw a straight line of best fit through your data points.</p>
+        <p>Draw a maximum gradient line and a minimum gradient line through your error bars to determine the uncertainty of your overall gradient.</p>
+        <p>State your final gradient with its uncertainty, and comment on whether the line passes through the origin (or close to it).</p>
+      </div>
+      <details class="hint-box" open>
+        <summary>Quick Tips</summary>
+        <p>Use the maximum and minimum slopes to calculate both the best gradient and the uncertainty: Δm = (m_max − m_min) / 2.</p>
+        <p>If your linearised graph is a straight line, this confirms the relationship v² ∝ 1/A and validates your chosen model.</p>
+      </details>
+      <details class="warning-box" open>
+        <summary>Watch Out</summary>
+        <p>Don't force a line through the origin if your data doesn't support it — a non-zero intercept may indicate systematic error or a missing variable in your model.</p>
+      </details>
+
+      <div class="upload-group">
+        <label class="upload-label">Linearised Graph Image</label>
+        <div class="upload-zone" id="upload-zone-img_graph_lin">
+          <div class="upload-preview" id="preview-img_graph_lin">
+            <div class="upload-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <p>No image uploaded</p>
+            </div>
+          </div>
+          <button type="button" class="upload-btn" onclick="document.getElementById('file-img_graph_lin').click()">Choose Image</button>
+          <input type="file" id="file-img_graph_lin" class="file-input" accept="image/*">
+          <input type="hidden" id="img_graph_lin" value="">
+        </div>
+      </div>
+
+      <textarea id="graph_lin" placeholder="Explain your linearised graph — state your best gradient with uncertainty, describe how you found the min/max lines, and discuss whether the fit supports the model."></textarea>
     </article>
   </section>
 
@@ -859,18 +1019,18 @@
   const TEXT_FIELDS = [
     'student_name', 'research_question', 'session_date',
     'rq', 'theory', 'variables', 'method', 'safety', 'procedure',
-    'raw_data', 'calculations', 'graph_analysis',
+    'raw_data', 'calculations', 'proc_data_1', 'graph_raw', 'lin_processing', 'lin_table', 'graph_lin',
     'conclusion', 'comparison',
     'weaknesses', 'improvements'
   ];
 
   const IMAGE_FIELDS = [
-    'img_setup', 'img_raw_data', 'img_calc', 'img_graph'
+    'img_setup', 'img_raw_data', 'img_calc', 'img_proc_data_1', 'img_graph_raw', 'img_lin_processing', 'img_lin_table', 'img_graph_lin'
   ];
 
   const SECTION_FIELDS = {
     'section-1': ['rq', 'theory', 'variables', 'method', 'safety', 'procedure', 'img_setup'],
-    'section-2': ['raw_data', 'img_raw_data', 'calculations', 'img_calc', 'graph_analysis', 'img_graph'],
+    'section-2': ['raw_data', 'img_raw_data', 'calculations', 'img_calc', 'proc_data_1', 'img_proc_data_1', 'graph_raw', 'img_graph_raw', 'lin_processing', 'img_lin_processing', 'lin_table', 'img_lin_table', 'graph_lin', 'img_graph_lin'],
     'section-3': ['conclusion', 'comparison'],
     'section-4': ['weaknesses', 'improvements'],
   };
@@ -993,7 +1153,12 @@
     { fileId: 'file-img_setup',     hiddenId: 'img_setup',     previewId: 'preview-img_setup' },
     { fileId: 'file-img_raw_data',  hiddenId: 'img_raw_data',  previewId: 'preview-img_raw_data' },
     { fileId: 'file-img_calc',      hiddenId: 'img_calc',      previewId: 'preview-img_calc' },
-    { fileId: 'file-img_graph',     hiddenId: 'img_graph',     previewId: 'preview-img_graph' }
+    { fileId: 'file-img_graph_raw', hiddenId: 'img_graph_raw', previewId: 'preview-img_graph_raw' },
+    { fileId: 'file-img_proc_data_1',  hiddenId: 'img_proc_data_1',  previewId: 'preview-img_proc_data_1' },
+    { fileId: 'file-img_graph_raw',    hiddenId: 'img_graph_raw',    previewId: 'preview-img_graph_raw' },
+    { fileId: 'file-img_lin_processing', hiddenId: 'img_lin_processing', previewId: 'preview-img_lin_processing' },
+    { fileId: 'file-img_lin_table',    hiddenId: 'img_lin_table',    previewId: 'preview-img_lin_table' },
+    { fileId: 'file-img_graph_lin',    hiddenId: 'img_graph_lin',    previewId: 'preview-img_graph_lin' }
   ];
 
   function showImagePreview(previewEl, dataUrl) {
@@ -1039,8 +1204,7 @@
     }
   }
 
-  var IMAGE_WIDTH_PX = 451;
-  var IMAGE_HEIGHT_PX = 338;
+  var IMAGE_WIDTH_PX = 602;
 
   function para(text, opts) {
     opts = opts || {};
@@ -1078,7 +1242,7 @@
     });
   }
 
-  function imagePara(dataUrl, caption) {
+  function imagePara(dataUrl, caption, fieldId) {
     if (!dataUrl || !dataUrl.startsWith('data:image/')) return [];
     try {
       var type;
@@ -1086,6 +1250,18 @@
       else if (dataUrl.indexOf('image/jpeg') > 0) type = 'jpg';
       else if (dataUrl.indexOf('image/gif') > 0) type = 'gif';
       else type = 'png';
+
+      var heightPx = Math.round(IMAGE_WIDTH_PX * 0.75);
+      if (fieldId) {
+        var previewEl = document.getElementById('preview-' + fieldId);
+        if (previewEl) {
+          var img = previewEl.querySelector('img');
+          if (img && img.naturalWidth > 0 && img.naturalHeight > 0) {
+            heightPx = Math.round(IMAGE_WIDTH_PX * img.naturalHeight / img.naturalWidth);
+          }
+        }
+      }
+
       return [
         new docx.Paragraph({
           spacing: { line: 480, lineRule: docx.LineRuleType.AUTO, before: 200, after: 60 },
@@ -1096,7 +1272,7 @@
               type: type,
               transformation: {
                 width: IMAGE_WIDTH_PX,
-                height: IMAGE_HEIGHT_PX,
+                height: heightPx,
               },
             }),
           ],
@@ -1139,7 +1315,7 @@
             subtitleBlock('1.2.2 Measurement Method', data.method),
             subtitleBlock('1.2.3 Safety and Practical Considerations', data.safety),
             subtitleBlock('1.3.1 Procedure', data.procedure),
-            imagePara(data.img_setup, 'Figure 1: Experimental setup'),
+            imagePara(data.img_setup, 'Figure 1: Experimental setup', 'img_setup'),
             emptyPara()
     );
   }
@@ -1147,12 +1323,22 @@
   function buildDataAnalysis(data) {
     return [].concat(
             sectionH('Section 2: Data Analysis'),
+            subsectionH('2.1 Raw Data Processing'),
             subtitleBlock('2.1.1 Raw Data', data.raw_data),
-            imagePara(data.img_raw_data, 'Figure 2: Data table'),
-            subtitleBlock('2.2.1 Mean and Uncertainty', data.calculations),
-            imagePara(data.img_calc, 'Figure 3: Sample calculation'),
-            subtitleBlock('2.2.2 Graph Analysis', data.graph_analysis),
-            imagePara(data.img_graph, 'Figure 4: Graph'),
+            imagePara(data.img_raw_data, 'Figure 2: Data table', 'img_raw_data'),
+            subtitleBlock('2.1.2 Mean and Uncertainty', data.calculations),
+            imagePara(data.img_calc, 'Figure 3: Sample calculation', 'img_calc'),
+            subtitleBlock('2.1.3 Processed Data Table 1', data.proc_data_1),
+            imagePara(data.img_proc_data_1, 'Figure 4: Processed data table', 'img_proc_data_1'),
+            subtitleBlock('2.1.4 Raw Data Graph', data.graph_raw),
+            imagePara(data.img_graph_raw, 'Figure 5: Terminal velocity vs surface area', 'img_graph_raw'),
+            subsectionH('2.2 Linearisation'),
+            subtitleBlock('2.2.1 Linearisation Data Processing', data.lin_processing),
+            imagePara(data.img_lin_processing, 'Figure 6: Linearisation working', 'img_lin_processing'),
+            subtitleBlock('2.2.2 Linearised Data Table', data.lin_table),
+            imagePara(data.img_lin_table, 'Figure 7: Linearised data table', 'img_lin_table'),
+            subtitleBlock('2.2.3 Linearised Graph', data.graph_lin),
+            imagePara(data.img_graph_lin, 'Figure 8: Linearised graph', 'img_graph_lin'),
             emptyPara()
     );
   }
