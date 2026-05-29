@@ -1,5 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
+<!--
+  IB Physics IA Writing Tool
+  ==========================
+  A self-contained, single-file HTML form that scaffolds IB Physics students
+  through the post-2025 Internal Assessment. Students fill prompted fields
+  mapped to rubric criteria, upload images, and generate a formatted .docx
+  Word document — all client-side with no server, database, or install.
+
+  HOW TO USE / ADAPT FOR A DIFFERENT RESEARCH QUESTION
+  -----------------------------------------------------
+  1. Each <article class="field-group"> is one form prompt. Edit the text
+     inside .prompt-box, .hint-box, and .warning-box to match your specific
+     experiment. Keep data-field, id, and hidden input IDs unchanged unless
+     you are adding/removing fields entirely.
+  2. The TEXT_FIELDS and IMAGE_FIELDS arrays in the JS must list every
+     form field ID so that auto-save, progress tracking, and Word generation
+     work correctly.
+  3. SECTION_FIELDS groups field IDs by IB criterion for per-section
+     progress tracking (X/Y counters). Add new fields here.
+  4. IMAGE_CONFIGS wires up file inputs → preview containers → hidden
+     base64 inputs for image uploads. Each image needs one config entry.
+  5. The build* functions (buildDataAnalysis, etc.) assemble the Word
+     document. Keep subsection headings and figure numbers in sync with
+     the HTML field order.
+  6. CONTEXT.md documents the data model — keep it in sync.
+
+  ARCHITECTURE
+  ------------
+  - Pure HTML + CSS + JS, single file (~1450 lines)
+  - CDN dependencies: docx.js v8.5.0 (UMD) + FileSaver.js v2.0.5
+  - Form data persisted to localStorage (key: 'ib-physics-ia-form')
+  - Images stored as base64 data URIs in hidden <input> elements
+  - Word document uses Times New Roman 12pt, double-spaced, 1" margins, A4
+-->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,7 +68,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ─── MINIMAL PROGRESS INDICATOR ─── */
+    /* ─── OVERALL PROGRESS BAR ─── fixed 3px bar across top showing % complete */
     .progress-container {
       position: fixed;
       top: 0;
@@ -51,7 +85,7 @@
       transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* ─── HEADER ─── */
+    /* ─── HEADER ─── sticky metadata bar: student name, RQ, date + overall % label */
     #app-header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
@@ -109,14 +143,14 @@
       border-color: var(--accent);
     }
 
-    /* ─── MAIN ─── */
+    /* ─── MAIN ─── centred content area containing all criterion sections */
     main {
       max-width: 840px;
       margin: 0 auto;
       padding: 48px 20px 140px;
     }
 
-    /* ─── CRITERION SECTION ─── */
+    /* ─── CRITERION SECTION ─── one IB assessment criterion (Research Design, Data Analysis, etc.) with marks badge and per-section progress */
     .criterion {
       margin-bottom: 56px;
     }
@@ -147,7 +181,7 @@
       color: var(--green);
     }
 
-    /* ─── FIELD GROUP ─── */
+    /* ─── FIELD GROUP ─── a single prompt card: heading + prompt + hints + textarea + optional image upload; one per form field */
     .field-group {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -178,7 +212,7 @@
       border-color: var(--accent);
     }
 
-    /* ─── PROMPT BOX ─── */
+    /* ─── PROMPT BOX ─── grey instruction text that guides the student on what to write; ADAPT: rewrite for your specific research question */
     .prompt-box {
       background: var(--accent-light);
       padding: 14px 16px;
@@ -193,7 +227,7 @@
     }
     .prompt-box p:last-child { margin-bottom: 0; }
 
-    /* ─── HINTS / WARNINGS ─── */
+    /* ─── HINTS / WARNINGS ─── collapsible tips (green) and common pitfalls (amber); ADAPT: tailor to your experiment's specific challenges */
     .hint-box, .warning-box {
       margin-bottom: 12px;
       border-radius: var(--radius);
@@ -217,7 +251,7 @@
       line-height: 1.6;
     }
 
-    /* ─── TEXTAREAS ─── */
+    /* ─── TEXTAREAS ─── student answer input; fires input/change events to trigger auto-save */
     .field-group textarea {
       width: 100%;
       min-height: 150px;
@@ -243,7 +277,7 @@
       min-height: 100px;
     }
 
-    /* ─── IMAGE UPLOAD ─── */
+    /* ─── IMAGE UPLOAD ─── FileReader → base64 → hidden input → localStorage; preview after selection */
     .upload-group {
       margin-top: 18px;
       padding-top: 18px;
@@ -318,7 +352,7 @@
     }
     .file-input { display: none; }
 
-    /* ─── GENERAL WRITING TIPS ─── */
+    /* ─── GENERAL WRITING TIPS ─── static list of formal lab-writing conventions (tense, units, objectivity) */
     .tips-box {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -349,7 +383,7 @@
       color: var(--text-light);
     }
 
-    /* ─── STICKY FOOTER ACTION BAR ─── */
+    /* ─── STICKY FOOTER ACTION BAR ─── "Generate Word Document" and "Clear Data" buttons, always visible at bottom */
     #app-footer {
       position: fixed;
       bottom: 0;
@@ -405,7 +439,7 @@
       letter-spacing: 0.01em;
     }
 
-    /* ─── RESPONSIVE ─── */
+    /* ─── RESPONSIVE ─── single-column layout below 640px for mobile/tablet */
     @media (max-width: 640px) {
       .metadata {
         grid-template-columns: 1fr;
@@ -460,6 +494,13 @@
 
 <main>
 
+  <!--
+    SECTION 1: Research Design — 6 marks
+    Prompts: RQ in context, background theory, variables, measurement method,
+    safety considerations, procedure + setup photo.
+    Fields: rq, theory, variables, method, safety, procedure, img_setup.
+    ADAPT: rewrite prompts to match your IV, DV, and experimental setup.
+  -->
   <section class="criterion" id="section-1">
     <div class="criterion-header">
       <h2>Section 1: Research Design</h2>
@@ -467,9 +508,8 @@
       <span class="section-progress" id="prog-section-1"></span>
     </div>
 
+    <!-- data-field="rq" — 1.1.1 Full research question. Student states IV, DV, and context. Key: rq -->
     <article class="field-group" data-field="rq">
-      <div class="field-header">
-        <h3>1.1.1 State your full research question</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -484,9 +524,8 @@
       <textarea id="rq" placeholder="Type your research question here…"></textarea>
     </article>
 
+    <!-- data-field="theory" — 1.1.2 Background theory. Physics behind the experiment. Key: theory -->
     <article class="field-group" data-field="theory">
-      <div class="field-header">
-        <h3>1.1.2 Background theory</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -505,9 +544,8 @@
       <textarea id="theory" placeholder="Explain the physics theory behind your project…"></textarea>
     </article>
 
+    <!-- data-field="variables" — 1.2.1 Variables. IV, DV, and controls listed explicitly. Key: variables -->
     <article class="field-group" data-field="variables">
-      <div class="field-header">
-        <h3>1.2.1 Variables</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -522,9 +560,8 @@
       <textarea id="variables" placeholder="List and explain your variables…"></textarea>
     </article>
 
+    <!-- data-field="method" — 1.2.2 Measurement method. Tools, precision, repetitions. Key: method -->
     <article class="field-group" data-field="method">
-      <div class="field-header">
-        <h3>1.2.2 Measurement method</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -543,9 +580,8 @@
       <textarea id="method" placeholder="Explain how you measured your data…"></textarea>
     </article>
 
+    <!-- data-field="safety" — 1.2.3 Safety and practical considerations. Key: safety -->
     <article class="field-group" data-field="safety">
-      <div class="field-header">
-        <h3>1.2.3 Safety and practical considerations</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -555,9 +591,8 @@
       <textarea id="safety" placeholder="Describe how you kept things safe and controlled…"></textarea>
     </article>
 
+    <!-- data-field="procedure" — 1.3.1 Step-by-step procedure + setup photo. Key: procedure, img_setup -->
     <article class="field-group" data-field="procedure">
-      <div class="field-header">
-        <h3>1.3.1 Step-by-step procedure</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -596,6 +631,17 @@
     </article>
   </section>
 
+  <!--
+    SECTION 2: Data Analysis — 6 marks
+    Two sub-sections: 2.1 Raw Data Processing (raw table, calculations,
+    processed table 1, raw data graph) and 2.2 Linearisation (data processing,
+    linearised table, linearised graph).
+    Fields: raw_data, img_raw_data, calculations, img_calc, proc_data_1,
+    img_proc_data_1, graph_raw, img_graph_raw, lin_processing,
+    img_lin_processing, lin_table, img_lin_table, graph_lin, img_graph_lin.
+    ADAPT: the prompt text references "terminal velocity" and "surface area"
+    — rewrite for your specific IV/DV and linearisation strategy.
+  -->
   <section class="criterion" id="section-2">
     <div class="criterion-header">
       <h2>Section 2: Data Analysis</h2>
@@ -603,9 +649,8 @@
       <span class="section-progress" id="prog-section-2"></span>
     </div>
 
+    <!-- data-field="raw_data" — 2.1.1 Raw data table. Area + trial speeds. Key: raw_data, img_raw_data -->
     <article class="field-group" data-field="raw_data">
-      <div class="field-header">
-        <h3>2.1.1 Raw data table</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -643,9 +688,8 @@
       </div>
     </article>
 
+    <!-- data-field="calculations" — 2.1.2 Mean and uncertainty. Sample calculation + uncertainty propagation. Key: calculations, img_calc -->
     <article class="field-group" data-field="calculations">
-      <div class="field-header">
-        <h3>2.1.2 Calculate mean and uncertainty</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -680,9 +724,8 @@
       </div>
     </article>
 
+    <!-- data-field="proc_data_1" — 2.1.3 Processed data table 1: area, area uncertainty, mean TV, abs. uncertainty TV. Key: proc_data_1, img_proc_data_1 -->
     <article class="field-group" data-field="proc_data_1">
-      <div class="field-header">
-        <h3>2.1.3 Processed Data Table 1</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -719,9 +762,8 @@
       </div>
     </article>
 
+    <!-- data-field="graph_raw" — 2.1.4 Raw data graph: TV vs Area. Shows raw relationship shape. Key: graph_raw, img_graph_raw -->
     <article class="field-group" data-field="graph_raw">
-      <div class="field-header">
-        <h3>2.1.4 Raw Data Graph: Terminal Velocity vs Surface Area</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -760,9 +802,8 @@
       <textarea id="graph_raw" placeholder="Interpret your raw data graph — what does the shape suggest about the relationship? What evidence points towards a linearisation (curved line, y-intercept, etc.)?"></textarea>
     </article>
 
+    <!-- data-field="lin_processing" — 2.2.1 Linearisation data processing. Formulas for 1/A, TV², uncertainty propagation. Key: lin_processing, img_lin_processing -->
     <article class="field-group" data-field="lin_processing">
-      <div class="field-header">
-        <h3>2.2.1 Linearisation Data Processing</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -800,9 +841,8 @@
       </div>
     </article>
 
+    <!-- data-field="lin_table" — 2.2.2 Linearised data table: 1/A ± uncert., TV², % uncert. TV², abs. uncert. TV². Key: lin_table, img_lin_table -->
     <article class="field-group" data-field="lin_table">
-      <div class="field-header">
-        <h3>2.2.2 Linearised Data Table</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -839,9 +879,8 @@
       </div>
     </article>
 
+    <!-- data-field="graph_lin" — 2.2.3 Linearised graph: TV² vs 1/Area, best-fit line with min/max gradients. Key: graph_lin, img_graph_lin -->
     <article class="field-group" data-field="graph_lin">
-      <div class="field-header">
-        <h3>2.2.3 Linearised Graph: Terminal Velocity² vs 1/Surface Area</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -882,6 +921,11 @@
     </article>
   </section>
 
+  <!--
+    SECTION 3: Conclusion — 6 marks
+    Student answers the RQ and compares results to accepted theory.
+    Fields: conclusion, comparison.
+  -->
   <section class="criterion" id="section-3">
     <div class="criterion-header">
       <h2>Section 3: Conclusion</h2>
@@ -889,9 +933,8 @@
       <span class="section-progress" id="prog-section-3"></span>
     </div>
 
+    <!-- data-field="conclusion" — 3.1.1 Answer the RQ with data support. Key: conclusion -->
     <article class="field-group" data-field="conclusion">
-      <div class="field-header">
-        <h3>3.1.1 State and justify your conclusion</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -910,9 +953,8 @@
       <textarea id="conclusion" placeholder="State your conclusion clearly…"></textarea>
     </article>
 
+    <!-- data-field="comparison" — 3.2.1 Compare to accepted theory. Key: comparison -->
     <article class="field-group" data-field="comparison">
-      <div class="field-header">
-        <h3>3.2.1 Comparison to accepted scientific context</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -931,6 +973,11 @@
     </article>
   </section>
 
+  <!--
+    SECTION 4: Evaluation — 6 marks
+    Student identifies weaknesses with impact analysis and proposes
+    specific, realistic improvements. Fields: weaknesses, improvements.
+  -->
   <section class="criterion" id="section-4">
     <div class="criterion-header">
       <h2>Section 4: Evaluation</h2>
@@ -938,9 +985,8 @@
       <span class="section-progress" id="prog-section-4"></span>
     </div>
 
+    <!-- data-field="weaknesses" — 4.1.1 Weaknesses and their impact. Key: weaknesses -->
     <article class="field-group" data-field="weaknesses">
-      <div class="field-header">
-        <h3>4.1.1 Identify specific weaknesses and their impact</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -960,9 +1006,8 @@
       <textarea id="weaknesses" placeholder="What went wrong and how did it affect your data?…"></textarea>
     </article>
 
+    <!-- data-field="improvements" — 4.2.1 Specific, realistic improvements. Key: improvements -->
     <article class="field-group" data-field="improvements">
-      <div class="field-header">
-        <h3>4.2.1 Propose specific, realistic improvements</h3>
         <span class="field-status"></span>
       </div>
       <div class="prompt-box">
@@ -1016,6 +1061,11 @@
 <script>
   const STORAGE_KEY = 'ib-physics-ia-form';
 
+  // ─── DATA MODEL ─────────────────────────────────────────────────────────
+  // TEXT_FIELDS: all text/textarea <input> and <textarea> IDs.
+  // IMAGE_FIELDS: all hidden <input> IDs storing base64 image data URIs.
+  // SECTION_FIELDS: groups field IDs by IB criterion for per-section progress.
+  // ADAPT: add/remove field IDs here when changing the form structure.
   const TEXT_FIELDS = [
     'student_name', 'research_question', 'session_date',
     'rq', 'theory', 'variables', 'method', 'safety', 'procedure',
@@ -1035,6 +1085,11 @@
     'section-4': ['weaknesses', 'improvements'],
   };
 
+  // ─── PERSISTENCE ────────────────────────────────────────────────────────
+  // getFormData: collects all field values into a plain object.
+  // saveForm: serialises to localStorage under STORAGE_KEY, then updates progress.
+  // loadForm: restores field values and image previews from localStorage on page load.
+  // clearForm: resets all fields, removes localStorage entry.
   function getFormData() {
     var data = {};
     TEXT_FIELDS.forEach(function(id) {
@@ -1091,6 +1146,8 @@
     updateProgress();
   }
 
+  // ─── DATE DEFAULTS ───────────────────────────────────────────────────────
+  // Sets the session_date input to today if empty.
   function setDefaultDate() {
     var el = document.getElementById('session_date');
     if (el && !el.value) {
@@ -1102,6 +1159,10 @@
     }
   }
 
+  // ─── PROGRESS TRACKING ──────────────────────────────────────────────────
+  // isFieldComplete: true if textarea has content or hidden input has data URI.
+  // updateProgress: recomputes green dots (per-field), X/Y counters (per-section),
+  // and the overall % bar (top of page). Called after every save/load/clear.
   function isFieldComplete(id) {
     var el = document.getElementById(id);
     if (!el) return false;
@@ -1149,6 +1210,11 @@
     if (label) label.textContent = pct + '% Complete';
   }
 
+  // ─── IMAGE UPLOAD PIPELINE ──────────────────────────────────────────────
+  // IMAGE_CONFIGS: maps each image upload to its file input, hidden input, and preview.
+  // showImagePreview: renders the uploaded image inside the preview container.
+  // resetImagePreview: restores the placeholder SVG + "No image uploaded" text.
+  // setupImageUpload: wires FileReader → base64 → hidden input → preview → save.
   var IMAGE_CONFIGS = [
     { fileId: 'file-img_setup',     hiddenId: 'img_setup',     previewId: 'preview-img_setup' },
     { fileId: 'file-img_raw_data',  hiddenId: 'img_raw_data',  previewId: 'preview-img_raw_data' },
@@ -1204,6 +1270,17 @@
     }
   }
 
+  // ─── WORD DOCUMENT FORMATTING ──────────────────────────────────────────
+  // IMAGE_WIDTH_PX = 602 pixels = full A4 page width at 96 DPI with 1" margins.
+  // docx.js v8.5 internally converts pixels to EMUs using × 9525.
+  //
+  // Helper functions:
+  //   para(text, opts) — a standard paragraph (Times New Roman 12pt, double-spaced)
+  //   sectionH(text) — bold 14pt heading for a major IB section
+  //   subsectionH(text) — bold 13pt heading for a sub-section (e.g. "2.1 Raw Data Processing")
+  //   emptyPara() — blank line for spacing
+  //   imagePara(dataUrl, caption, fieldId) — centred image at full width with real aspect ratio
+  //   subtitleBlock(name, text) — subsection heading + content (empty para if blank)
   var IMAGE_WIDTH_PX = 602;
 
   function para(text, opts) {
@@ -1245,12 +1322,22 @@
   function imagePara(dataUrl, caption, fieldId) {
     if (!dataUrl || !dataUrl.startsWith('data:image/')) return [];
     try {
+      // IMPORTANT: docx.js ImageRun type requires lowercase strings:
+      // "png", "jpg", "gif", "bmp". The data URL prefix "data:image/jpeg"
+      // maps to "jpg", NOT "jpeg".
       var type;
+      // NOTE: indexOf always returns > 0 here because a data URL starts with
+      // "data:" at position 0 and the format substring appears after position 0.
+      // Also safe: the data URL is validated by the startsWith('data:image/') guard above.
       if (dataUrl.indexOf('image/png') > 0) type = 'png';
       else if (dataUrl.indexOf('image/jpeg') > 0) type = 'jpg';
       else if (dataUrl.indexOf('image/gif') > 0) type = 'gif';
       else type = 'png';
 
+      // Image dimensions: width is fixed at full page width (602px).
+      // Height is calculated from the actual image aspect ratio via the
+      // preview <img> element in the DOM (synchronous, handles cached images).
+      // Fallback: 4:3 ratio (0.75) if the image isn't loaded yet.
       var heightPx = Math.round(IMAGE_WIDTH_PX * 0.75);
       if (fieldId) {
         var previewEl = document.getElementById('preview-' + fieldId);
@@ -1268,6 +1355,8 @@
           alignment: docx.AlignmentType.CENTER,
           children: [
             new docx.ImageRun({
+              // docx.js v8.5 has built-in convertDataURIToBinary — data URLs
+              // can be passed directly to the `data` property.
               data: dataUrl,
               type: type,
               transformation: {
@@ -1291,6 +1380,10 @@
     );
   }
 
+  // ─── WORD DOCUMENT ASSEMBLY ─────────────────────────────────────────────
+  // Each build* function returns an array of docx.Paragraph objects for one
+  // IB criterion section. They are concatenated in generateWordDoc().
+  // ADAPT: subsection headings and figure captions must match the HTML field order.
   function buildTitlePage(data) {
     return [
       emptyPara(), emptyPara(), emptyPara(), emptyPara(),
@@ -1363,6 +1456,10 @@
   var A4_PAGE = { width: 11906, height: 16838 };
   var ONE_INCH = 1440;
 
+  // ─── GENERATE WORD DOCUMENT ──────────────────────────────────────────────
+  // Validates that a research question is entered, then constructs a docx.Document
+  // with A4 page, 1" margins, Times New Roman 12pt, double-spaced, page numbers
+  // from page 2. Triggers download via FileSaver.js.
   function generateWordDoc() {
     if (typeof docx === 'undefined' || typeof saveAs === 'undefined') {
       alert('Required libraries are not loaded. Please check your internet connection and refresh the page.');
@@ -1431,6 +1528,9 @@
     });
   }
 
+  // ─── INIT ────────────────────────────────────────────────────────────────
+  // On page load: restore saved data, set default date, wire auto-save events,
+  // set up image uploads, connect action buttons, render progress.
   document.addEventListener('DOMContentLoaded', function() {
     loadForm();
     setDefaultDate();
